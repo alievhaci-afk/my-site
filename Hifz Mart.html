@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hifz Pro - Legend</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #27ae60; --primary-dark: #1e8449; --secondary: #2980b9; --accent: #e67e22;
+            --bg: #f8faf9; --card-bg: #ffffff; --text: #2c3e50; --text-light: #7f8c8d;
+            --border: #f1f1f1; --task-bg: #f9fbfb; --today-bg: #d1f2eb; --badge-bg: #e8f5e9;
+        }
+
+        [data-theme="dark"] {
+            --bg: #121212; --card-bg: #1e1e1e; --text: #e0e0e0; --text-light: #aaa;
+            --border: #333; --task-bg: #2a2a2a; --today-bg: #1a3a2a; --badge-bg: #1a3a2a;
+            --secondary: #5dade2; --accent: #f39c12;
+        }
+
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; line-height: 1.5; transition: 0.3s; }
+        
+        header { text-align: center; padding: 20px 15px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); margin: -15px -15px 20px -15px; color: white; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2); position: relative; }
+        h1 { margin: 0; font-size: 20px; font-weight: 700; text-align: center; }
+        #theme-toggle { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; color: white; cursor: pointer; position: absolute; right: 15px; top: 15px; }
+
+        .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 13px; font-weight: 600; margin-bottom: 8px; margin-top: 10px;}
+        .fire { color: #f1c40f; }
+
+        .progress-bar-bg { background: rgba(255,255,255,0.3); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+        .progress-fill { background: #fff; height: 100%; width: 0%; border-radius: 4px; transition: width 0.5s ease; }
+        .micro-goal { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; opacity: 0.9; margin-top: 6px; }
+
+        .card { background: var(--card-bg); border-radius: 20px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 20px; transition: 0.3s; }
+        .today-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        .date-badge { background: var(--badge-bg); color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: 700; }
+
+        .task { display: flex; align-items: center; padding: 10px; margin: 6px 0; background: var(--task-bg); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; }
+        .task input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); }
+        .task b { font-weight: 600; font-size: 14px; flex-grow: 1; }
+        .val { font-family: monospace; font-size: 13px; font-weight: 700; text-align: right; }
+        .blue { color: var(--secondary); } .orange { color: var(--accent); }
+        .task.completed { opacity: 0.5; text-decoration: line-through; background: var(--border); }
+
+        .notes-area { width: 100%; box-sizing: border-box; margin-top: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--task-bg); color: var(--text); font-family: 'Montserrat', sans-serif; font-size: 13px; resize: none; outline: none; }
+        
+        /* Блок разбора аятов */
+        .tafsir-box { background: rgba(41, 128, 185, 0.05); border-left: 4px solid var(--secondary); padding: 15px; border-radius: 0 12px 12px 0; margin-top: 15px; font-size: 13px; }
+        .tafsir-box h4 { margin: 0 0 12px 0; color: var(--secondary); font-size: 14px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid rgba(41, 128, 185, 0.2); padding-bottom: 8px;}
+        .arabic-word { font-size: 18px; font-weight: bold; color: var(--text); font-family: 'Amiri', serif; }
+        .tafsir-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+        .tafsir-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .page-tag { display: inline-block; background: var(--secondary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; font-weight: bold;}
+
+        /* Цитата дня */
+        .quote-box { background: var(--task-bg); padding: 15px; border-radius: 15px; font-style: italic; text-align: center; font-size: 13px; color: var(--text-light); margin-bottom: 20px; border: 1px dashed var(--border); line-height: 1.6;}
+
+        .scroll-container { overflow-y: auto; max-height: 40vh; border-radius: 15px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        th { background: var(--task-bg); color: var(--text-light); padding: 10px 2px; font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        td { padding: 10px 2px; text-align: center; border-bottom: 1px solid var(--border); color: var(--text); }
+        .today-row { background-color: var(--today-bg) !important; font-weight: 700; }
+
+        .backup-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .btn { background: var(--task-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-pause { background: #e74c3c; color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; }
+        .btn-unpause { background: var(--primary); color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button id="theme-toggle">🌙</button>
+        <h1>📖 План 24</h1>
+        
+        <div class="stats-row">
+            <span id="progress-text">Осталось: -- стр</span>
+            <span id="streak-text" class="fire">🔥 В ударе: 0 дн.</span>
+        </div>
+        
+        <div class="progress-bar-bg"><div class="progress-fill" id="progress-fill"></div></div>
+        
+        <div class="micro-goal">
+            <span id="percent-text">0% Корана</span>
+            <span id="juz-timer-text">До след. Джуза: -- стр</span>
+        </div>
+    </header>
+
+    <div class="card" id="today-card">
+        <div class="today-header">
+            <h2 style="margin:0; font-size:18px;">План на сегодня</h2>
+            <div id="date-now" class="date-badge">--.--.--</div>
+        </div>
+        
+        <div id="tasks-container">
+            <label class="task" id="task-n"><input type="checkbox" id="cb-n"> <b>Новая (20х):</b> <span id="n-page" class="val blue">--</span></label>
+            <label class="task" id="task-zp"><input type="checkbox" id="cb-zp"> <b>ЗП (5 стр):</b> <span id="zp-page" class="val orange">--</span></label>
+            <label class="task" id="task-na"><input type="checkbox" id="cb-na"> <b id="na-title">Ближний:</b> <span id="na-page" class="val blue">--</span></label>
+            <label class="task" id="task-fa"><input type="checkbox" id="cb-fa"> <b id="fa-title">Дальний:</b> <span id="fa-page" class="val orange">--</span></label>
+            <label class="task" id="task-ka"><input type="checkbox" id="cb-ka"> <b>КА 62-94 (3):</b> <span id="ka-page" class="val blue">--</span></label>
+        </div>
+
+        <textarea id="daily-notes" class="notes-area" rows="2" placeholder="✏️ Заметки (ошибки, слабые места...)"></textarea>
+        
+        <div id="tafsir-container" class="tafsir-box" style="display: none;"></div>
+
+        <button id="pause-btn" class="btn btn-pause" onclick="togglePause()">⏸️ Взять паузу на сегодня (Сдвиг)</button>
+    </div>
+
+    <div class="card" style="padding: 10px;">
+        <h3 style="padding-left:15px; font-size:16px;">📅 График (Умный сдвиг)</h3>
+        <div class="scroll-container" id="scroll-box">
+            <table id="main-table">
+                <thead><tr><th>Дата</th><th>Н.</th><th>ЗП</th><th>Ближ.</th><th>Даль.</th><th>КА</th></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="quote-box" id="daily-quote">Загрузка мудрости...</div>
+
+    <div class="backup-controls" style="margin-bottom: 20px;">
+        <button class="btn" onclick="exportBackup()">📥 Скачать прогресс</button>
+        <button class="btn" onclick="document.getElementById('import-file').click()">📤 Загрузить</button>
+        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+    </div>
+
+<script>
+    // Получаем сегодняшнюю дату
+    const now = new Date();
+    const nowDD = String(now.getDate()).padStart(2, '0');
+    const nowMM = String(now.getMonth() + 1).padStart(2, '0');
+    const nowYY = String(now.getFullYear()).slice(-2);
+    const todayStr = `${nowDD}.${nowMM}.${nowYY}`;
+
+    // --- ДУХОВНАЯ ПОДЗАРЯДКА (1 ЦИТАТА В ДЕНЬ) ---
+    const quotes = [
+        "«Лучшими из вас являются те, кто изучает Коран и учит ему других» (Аль-Бухари)",
+        "«Тот, кто читает Коран, зная его наизусть, будет с благородными посланцами» (Аль-Бухари)",
+        "«Поистине, Аллах возвышает посредством этого Писания одни народы и унижает других» (Муслим)",
+        "«Читайте Коран, ибо в День воскресения он явится как заступник» (Муслим)",
+        "«Каждому, кто прочтет хотя бы одну букву из Книги Аллаха, запишется одно доброе дело» (Ат-Тирмизи)",
+        "«Коран — это довод за тебя или против тебя» (Муслим)",
+        "«В чьем сердце нет ничего из Корана, тот подобен разрушенному дому» (Ат-Тирмизи)"
+    ];
+
+    let savedQuoteDate = localStorage.getItem('hifz_quote_date');
+    let savedQuoteText = localStorage.getItem('hifz_quote_text');
+
+    if (savedQuoteDate !== todayStr || !savedQuoteText) {
+        savedQuoteText = quotes[Math.floor(Math.random() * quotes.length)];
+        localStorage.setItem('hifz_quote_date', todayStr);
+        localStorage.setItem('hifz_quote_text', savedQuoteText);
+    }
+    document.getElementById('daily-quote').innerHTML = `💡 ${savedQuoteText}`;
+
+    // --- БАЗА СЛОЖНЫХ СЛОВ (Маида / Анам) ---
+    const quranVocab = {
+        "116": "<b><span class='arabic-word'>مُهَيْمِنًا</span> (Мухайминан)</b> - Хранитель, свидетель над прежними Писаниями (аят 48).",
+        "117": "<b><span class='arabic-word'>دَائِرَةٌ</span> (Да'иратун)</b> - Беда, превратности судьбы (аят 52). <br><b><span class='arabic-word'>يَرْتَدَّ</span> (Яртадда)</b> - Отступит от веры (аят 54).",
+        "118": "<b><span class='arabic-word'>السُّحْتِ</span> (Ас-Сухт)</b> - Запретное имущество, взятка (аят 62).",
+        "119": "<b><span class='arabic-word'>مُقْتَصِدَةٌ</span> (Муктасидах)</b> - Умеренные, идущие прямым путем (аят 66).",
+        "120": "<b><span class='arabic-word'>عَمُوا وَصَمُّوا</span> ('Аму уа самму)</b> - Они ослепли и оглохли [к истине] (аят 71).",
+        "121": "<b><span class='arabic-word'>قِسِّيسِينَ وَرُهْبَانًا</span> (Киссисина уа рухбанан)</b> - Священники и монахи (аят 82).",
+        "122": "<b><span class='arabic-word'>تَفِيضُ مِنَ الدَّمْعِ</span> (Тафиду минад-дам')</b> - Переполняются слезами (аят 83).<br><b><span class='arabic-word'>اللَّغْوِ</span> (Аль-Лягъу)</b> - Пустословие, непреднамеренные клятвы (аят 89).",
+        "123": "<b><span class='arabic-word'>رِجْسٌ</span> (Риджс)</b> - Скверна. <b><span class='arabic-word'>الْمَيْسِرُ</span> (Аль-Майсир)</b> - Азартные игры (аят 90).",
+        "124": "<b><span class='arabic-word'>بَحِيرَةٍ وَلَا سَائِبَةٍ</span> (Бахиратин уа ля са'ибатин)</b> - Языческие верблюдицы для идолов (аят 103).",
+        "125": "<b><span class='arabic-word'>تَحْبِسُونَهُمَا</span> (Тахбисунахума)</b> - Вы задержите их [свидетелей] (аят 106).",
+        "126": "<b><span class='arabic-word'>الْحَوَارِيُّونَ</span> (Аль-Хауарийюн)</b> - Апостолы Исы (аят 111).",
+        "127": "<b><span class='arabic-word'>مَائِدَةً</span> (Ма'идатан)</b> - Накрытый стол, трапеза с небес (аят 114).",
+        "128": "<b><span class='arabic-word'>يَلْبِسُوا</span> (Яльбису)</b> - Запутать их, смешать истину с ложью (аят 9).",
+        "129": "<b><span class='arabic-word'>أَكِنَّةً</span> (Акиннатан)</b> - Покрывала на сердцах. <b><span class='arabic-word'>وَقْرًا</span> (Уакран)</b> - Глухота (аят 25).",
+        "130": "<b><span class='arabic-word'>أَسَاطِيرُ</span> (Асатыру)</b> - Сказки, легенды (аят 25).",
+        "131": "<b><span class='arabic-word'>مُبْلِسُونَ</span> (Мублисун)</b> - Пришедшие в отчаяние (аят 44).",
+        "132": "<b><span class='arabic-word'>تَطْرُدِ</span> (Татруд)</b> - Не прогоняй (аят 52).",
+        "133": "<b><span class='arabic-word'>مَفَاتِحُ الْغَيْبِ</span> (Мафатих аль-гайб)</b> - Ключи сокровенного (аят 59).",
+        "134": "<b><span class='arabic-word'>يَتَوَفَّاكُمْ</span> (Ятауаффакум)</b> - Усыпляет / забирает вас (аят 60).",
+        "135": "<b><span class='arabic-word'>يَخُوضُونَ</span> (Яхудуна)</b> - Погружаются / болтают о знамениях (аят 68)."
+    };
+
+    // --- ТЕМА ---
+    const themeToggle = document.getElementById('theme-toggle');
+    if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); themeToggle.innerText = '☀️'; }
+    themeToggle.addEventListener('click', () => {
+        if (document.body.getAttribute('data-theme') === 'dark') { document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); themeToggle.innerText = '🌙'; } 
+        else { document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); themeToggle.innerText = '☀️'; }
+    });
+
+    function formatRanges(arr) {
+        if (!arr || arr.length === 0) return "—";
+        let ranges = []; let start = arr[0]; let prev = arr[0];
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i] === prev + 1) { prev = arr[i]; } 
+            else { ranges.push(start === prev ? start.toString() : start + "–" + prev); start = arr[i]; prev = arr[i]; }
+        }
+        ranges.push(start === prev ? start.toString() : start + "–" + prev);
+        return ranges.join(", ");
+    }
+
+    // --- АЛГОРИТМ И ПАУЗЫ ---
+    const data = [];
+    let currentDate = new Date(2026, 2, 13);
+    let pauses = JSON.parse(localStorage.getItem('hifz_pauses') || '[]');
+
+    let naPointer = 95; let faPointer = 95; let kaPointer = 62; 
+    const TARGET_PAGE = 581;
+    let p = 116;
+
+    while (p <= TARGET_PAGE) {
+        let dd = String(currentDate.getDate()).padStart(2, '0');
+        let mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+        let yy = String(currentDate.getFullYear()).slice(-2);
+        let dateStr = `${dd}.${mm}.${yy}`;
+
+        if (pauses.includes(dateStr)) {
+            data.push([dateStr, "Пауза ⏸️", "—", "—", "—", "—", p, 0, 0, true]);
+        } else {
+            let newPage = p.toString();
+            let zpStr = `${p - 5}–${p - 1}`;
+
+            let kaPages = [];
+            for (let i = 0; i < 3; i++) { kaPages.push(kaPointer); kaPointer++; if (kaPointer > 94) kaPointer = 62; }
+            kaPages.sort((a,b) => a - b);
+
+            let naPoolStart = Math.max(95, p - 35); let naPoolEnd = p - 6;
+            let faPoolStart = 95; let faPoolEnd = p - 36;
+            let faPoolSize = faPoolEnd >= faPoolStart ? (faPoolEnd - faPoolStart + 1) : 0;
+            
+            let targetFaCount = 0;
+            if (faPoolSize > 0) targetFaCount = Math.min(5, Math.ceil(faPoolSize / 6)); 
+            let targetNaCount = 15 - targetFaCount;
+
+            let naPages = []; let faPages = [];
+
+            if (targetFaCount > 0) {
+                if (faPointer < faPoolStart || faPointer > faPoolEnd) faPointer = faPoolStart;
+                for (let i = 0; i < targetFaCount; i++) { faPages.push(faPointer); faPointer++; if (faPointer > faPoolEnd) faPointer = faPoolStart; }
+            }
+            if (targetNaCount > 0) {
+                if (naPointer < naPoolStart || naPointer > naPoolEnd) naPointer = naPoolStart;
+                for (let i = 0; i < targetNaCount; i++) { naPages.push(naPointer); naPointer++; if (naPointer > naPoolEnd) naPointer = naPoolStart; }
+            }
+
+            naPages.sort((a,b) => a - b); faPages.sort((a,b) => a - b);
+
+            data.push([ dateStr, newPage, zpStr, formatRanges(naPages), formatRanges(faPages), formatRanges(kaPages), p, targetNaCount, targetFaCount, false ]);
+            p++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // --- ОТОБРАЖЕНИЕ ---
+    let rowToday = data.find(r => r[0] === todayStr) || data[0]; 
+    let currentNewPage = rowToday[6];
+    let isPausedToday = rowToday[9];
+    
+    document.getElementById('date-now').innerText = rowToday[0];
+
+    const pauseBtn = document.getElementById('pause-btn');
+    if (isPausedToday) {
+        document.getElementById('tasks-container').style.display = 'none';
+        document.getElementById('tafsir-container').style.display = 'none';
+        pauseBtn.innerText = "▶️ Отменить паузу (Продолжить)";
+        pauseBtn.className = "btn btn-unpause";
+    } else {
+        document.getElementById('n-page').innerText = rowToday[1];
+        document.getElementById('zp-page').innerText = rowToday[2];
+        document.getElementById('na-page').innerText = rowToday[3];
+        document.getElementById('fa-page').innerText = rowToday[4];
+        document.getElementById('ka-page').innerText = rowToday[5]; 
+        document.getElementById('na-title').innerText = `Ближний (${rowToday[7]}):`;
+        document.getElementById('fa-title').innerText = `Дальний (${rowToday[8]}):`;
+        
+        // --- ЛОГИКА ТАФСИРА ДЛЯ НОВОЙ + ЗОЛОТОЙ 5-КИ ---
+        let tafsirHtml = "";
+        let hasVocab = false;
+        
+        // Перебираем 6 страниц: от начала Золотой Пятерки до Новой страницы
+        for (let vPage = currentNewPage - 5; vPage <= currentNewPage; vPage++) {
+            if (quranVocab[vPage]) {
+                tafsirHtml += `<div class="tafsir-item">
+                    <span class="page-tag">Стр. ${vPage}</span><br>
+                    ${quranVocab[vPage]}
+                </div>`;
+                hasVocab = true;
+            }
+        }
+
+        if (hasVocab) {
+            const tafsirBox = document.getElementById('tafsir-container');
+            tafsirBox.style.display = 'block';
+            tafsirBox.innerHTML = `<h4>💡 Сложные слова (Новая + Повторение)</h4>${tafsirHtml}`;
+        }
+    }
+    
+    let pagesLeft = TARGET_PAGE - currentNewPage;
+    let percentDone = ((currentNewPage / TARGET_PAGE) * 100).toFixed(1);
+    document.getElementById('progress-text').innerText = `Осталось: ${pagesLeft} стр`;
+    document.getElementById('percent-text').innerText = `${percentDone}%`;
+    document.getElementById('progress-fill').style.width = `${percentDone}%`;
+
+    let currentJuz = Math.ceil((currentNewPage - 1) / 20);
+    if (currentJuz === 0) currentJuz = 1;
+    let endJuzPage = (currentJuz * 20) + 1;
+    let pagesToNextJuz = endJuzPage - currentNewPage;
+    
+    if (pagesToNextJuz === 0 || pagesToNextJuz < 0) {
+        document.getElementById('juz-timer-text').innerText = `🎉 Конец ${currentJuz}-го Джуза!`;
+    } else {
+        document.getElementById('juz-timer-text').innerText = `До конца ${currentJuz}-го Джуза: ${pagesToNextJuz} стр.`;
+    }
+
+    let html = "";
+    data.forEach(r => {
+        let isToday = r[0] === todayStr ? 'class="today-row" id="today"' : '';
+        if (r[9]) {
+             html += `<tr ${isToday}><td>${r[0]}</td><td colspan="5" style="color:var(--accent)"><b>⏸️ ПАУЗА</b></td></tr>`;
+        } else {
+             html += `<tr ${isToday}><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
+        }
+    });
+    document.getElementById('table-body').innerHTML = html;
+
+    // --- ПАУЗА ---
+    function togglePause() {
+        let pList = JSON.parse(localStorage.getItem('hifz_pauses') || '[]');
+        if (pList.includes(todayStr)) { pList = pList.filter(d => d !== todayStr); } 
+        else { pList.push(todayStr); }
+        localStorage.setItem('hifz_pauses', JSON.stringify(pList));
+        location.reload(); 
+    }
+
+    // --- ЛОГИКА ГАЛОЧЕК ---
+    if (!isPausedToday) {
+        const tasks = [
+            { cb: 'cb-n', container: 'task-n' }, { cb: 'cb-zp', container: 'task-zp' },
+            { cb: 'cb-na', container: 'task-na' }, { cb: 'cb-fa', container: 'task-fa' }, { cb: 'cb-ka', container: 'task-ka' }
+        ];
+
+        const notesArea = document.getElementById('daily-notes');
+        const notesKey = `hifz_${todayStr}_notes`;
+        notesArea.value = localStorage.getItem(notesKey) || '';
+        notesArea.addEventListener('input', () => { localStorage.setItem(notesKey, notesArea.value); });
+
+        function updateStreak() {
+            let streak = 0;
+            let todayIndex = data.findIndex(r => r[0] === todayStr);
+            if (todayIndex === -1) todayIndex = 0;
+
+            for (let i = todayIndex; i >= 0; i--) {
+                let dStr = data[i][0];
+                if (data[i][9]) continue; 
+                
+                let allChecked = true;
+                for(let t of tasks) {
+                    if (localStorage.getItem(`hifz_${dStr}_${t.cb}`) !== 'true') { allChecked = false; break; }
+                }
+                if (i === todayIndex && !allChecked) continue; 
+                if (allChecked) streak++;
+                else break; 
+            }
+            document.getElementById('streak-text').innerText = `🔥 В ударе: ${streak} дн.`;
+        }
+
+        tasks.forEach(task => {
+            const checkbox = document.getElementById(task.cb);
+            const container = document.getElementById(task.container);
+            const storageKey = `hifz_${todayStr}_${task.cb}`;
+
+            if (localStorage.getItem(storageKey) === 'true') { checkbox.checked = true; container.classList.add('completed'); }
+
+            checkbox.addEventListener('change', function() {
+                localStorage.setItem(storageKey, this.checked);
+                if (this.checked) container.classList.add('completed');
+                else container.classList.remove('completed');
+                updateStreak(); 
+            });
+        });
+
+        updateStreak();
+    }
+
+    // --- РЕЗЕРВНОЕ КОПИРОВАНИЕ ---
+    function exportBackup() {
+        let backupData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key.startsWith('hifz_') || key === 'theme') { backupData[key] = localStorage.getItem(key); }
+        }
+        let blob = new Blob([JSON.stringify(backupData)], { type: "application/json" });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url; a.download = `Hifz_Backup_${todayStr}.json`; a.click();
+    }
+
+    function importBackup(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let importedData = JSON.parse(e.target.result);
+                for (let key in importedData) { localStorage.setItem(key, importedData[key]); }
+                alert("✅ Прогресс восстановлен!"); location.reload();
+            } catch(err) { alert("❌ Ошибка файла."); }
+        };
+        reader.readAsText(file);
+    }
+
+    window.onload = () => {
+        const tr = document.getElementById('today');
+        const box = document.getElementById('scroll-box');
+        if(tr && box) { box.scrollTop = tr.offsetTop - box.offsetTop - 50; }
+    };
+</script>
+</body>
+</html>
