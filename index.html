@@ -18,11 +18,25 @@
             --secondary: #5dade2; --accent: #f39c12;
         }
 
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; line-height: 1.5; transition: 0.3s; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; line-height: 1.5; transition: 0.3s; padding-bottom: 40px;}
         
         header { text-align: center; padding: 20px 15px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); margin: -15px -15px 20px -15px; color: white; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2); position: relative; }
-        h1 { margin: 0; font-size: 20px; font-weight: 700; text-align: center; }
+        h1 { margin: 0; font-size: 20px; font-weight: 700; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        
+        /* Индикатор облачной синхронизации */
+        .sync-indicator { cursor: pointer; font-size: 18px; transition: 0.3s; display: inline-block; vertical-align: middle; }
+        .sync-indicator.synced { color: #2ecc71; filter: drop-shadow(0 0 4px rgba(46, 204, 113, 0.6)); }
+        .sync-indicator.syncing { color: #f1c40f; animation: spin 1s infinite linear; }
+        .sync-indicator.error { color: #e74c3c; filter: drop-shadow(0 0 4px rgba(231, 76, 60, 0.6)); }
+        .sync-indicator.offline { color: rgba(255,255,255,0.4); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         #theme-toggle { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; color: white; cursor: pointer; position: absolute; right: 15px; top: 15px; }
+
+        /* Вкладки навигации */
+        .tabs-container { display: flex; gap: 8px; margin: 0 0 20px 0; background: var(--card-bg); padding: 6px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1; border: none; background: transparent; color: var(--text-light); padding: 10px 5px; font-family: inherit; font-size: 12px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.2s; text-align: center; }
+        .tab-btn.active { background: var(--primary); color: white; }
 
         .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 13px; font-weight: 600; margin-bottom: 8px; margin-top: 10px;}
         .fire { color: #f1c40f; }
@@ -35,8 +49,8 @@
         .today-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
         .date-badge { background: var(--badge-bg); color: var(--primary); padding: 5px 12px; border-radius: 10px; font-weight: 700; }
 
-        .task { display: flex; align-items: center; padding: 10px; margin: 6px 0; background: var(--task-bg); border-radius: 12px; cursor: pointer; transition: all 0.3s ease; }
-        .task input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); }
+        .task { display: flex; align-items: center; padding: 12px; margin: 8px 0; background: var(--task-bg); border-radius: 14px; cursor: pointer; transition: all 0.3s ease; -webkit-tap-highlight-color: transparent; }
+        .task input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); flex-shrink: 0; }
         .task b { font-weight: 600; font-size: 14px; flex-grow: 1; }
         .val { font-family: monospace; font-size: 13px; font-weight: 700; text-align: right; }
         .blue { color: var(--secondary); } .orange { color: var(--accent); }
@@ -52,11 +66,17 @@
         .tafsir-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
         .page-tag { display: inline-block; background: var(--secondary); color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; font-weight: bold;}
 
+        /* Окно первого запуска прослушивания */
+        .setup-container { text-align: center; padding: 10px 5px; }
+        .setup-input { width: 100%; max-width: 150px; padding: 12px; font-size: 18px; border-radius: 12px; border: 2px solid var(--border); text-align: center; font-family: inherit; font-weight: bold; margin: 15px 0; background: var(--task-bg); color: var(--text); }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: 0.2s; width: 100%; max-width: 250px; }
+        .btn-action:active { transform: scale(0.98); }
+
         /* Цитата дня */
         .quote-box { background: var(--task-bg); padding: 15px; border-radius: 15px; font-style: italic; text-align: center; font-size: 13px; color: var(--text-light); margin-bottom: 20px; border: 1px dashed var(--border); line-height: 1.6;}
 
         .scroll-container { overflow-y: auto; max-height: 40vh; border-radius: 15px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { background: var(--task-bg); color: var(--text-light); padding: 10px 2px; font-size: 9px; text-transform: uppercase; position: sticky; top: 0; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         td { padding: 10px 2px; text-align: center; border-bottom: 1px solid var(--border); color: var(--text); }
         .today-row { background-color: var(--today-bg) !important; font-weight: 700; }
@@ -64,15 +84,30 @@
         .backup-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
         .btn { background: var(--task-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 10px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn:active { transform: scale(0.95); }
-        .btn-pause { background: #e74c3c; color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; }
-        .btn-unpause { background: var(--primary); color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; }
+        .btn-pause { background: #e74c3c; color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 700; }
+        .btn-unpause { background: var(--primary); color: white; border: none; width: 100%; margin-top: 15px; padding: 12px; font-size: 14px; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 700; }
+
+        /* Уведомления */
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 350px; }
+        .toast { background: rgba(0, 0, 0, 0.85); color: #fff; padding: 12px 20px; border-radius: 15px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; pointer-events: auto; text-align: center; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+        .toast.info { background: #2980b9; }
+
+        /* Раздел настроек */
+        .instruction-block { background: var(--task-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-top: 15px; font-size: 12px; text-align: left; }
+        .code-area { background: #2d3748; color: #a0aec0; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 11px; overflow-x: auto; white-space: pre; margin: 10px 0; display: block; max-height: 200px; text-align: left; }
+        .input-text { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--task-bg); color: var(--text); font-family: inherit; margin-bottom: 10px; font-size: 13px; }
+        .setting-section { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+        .setting-section:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
     <header>
         <button id="theme-toggle">🌙</button>
-        <h1>📖 План 24</h1>
+        <h1 id="header-title">📖 План 24 <span id="sync-indicator" class="sync-indicator offline" title="Статус синхронизации">☁️</span></h1>
         
         <div class="stats-row">
             <span id="progress-text">Осталось: -- стр</span>
@@ -87,54 +122,199 @@
         </div>
     </header>
 
-    <div class="card" id="today-card">
-        <div class="today-header">
-            <h2 style="margin:0; font-size:18px;">План на сегодня</h2>
-            <div id="date-now" class="date-badge">--.--.--</div>
-        </div>
-        
-        <div id="tasks-container">
-            <label class="task" id="task-n"><input type="checkbox" id="cb-n"> <b>Новая (20х):</b> <span id="n-page" class="val blue">--</span></label>
-            <label class="task" id="task-zp"><input type="checkbox" id="cb-zp"> <b>ЗП (5 стр):</b> <span id="zp-page" class="val orange">--</span></label>
-            <label class="task" id="task-na"><input type="checkbox" id="cb-na"> <b id="na-title">Ближний:</b> <span id="na-page" class="val blue">--</span></label>
-            <label class="task" id="task-fa"><input type="checkbox" id="cb-fa"> <b id="fa-title">Дальний:</b> <span id="fa-page" class="val orange">--</span></label>
-            <label class="task" id="task-ka"><input type="checkbox" id="cb-ka"> <b>КА 62-94 (3):</b> <span id="ka-page" class="val blue">--</span></label>
-        </div>
-
-        <textarea id="daily-notes" class="notes-area" rows="2" placeholder="✏️ Заметки (ошибки, слабые места...)"></textarea>
-        
-        <div id="tafsir-container" class="tafsir-box" style="display: none;"></div>
-
-        <button id="pause-btn" class="btn btn-pause" onclick="togglePause()">⏸️ Взять паузу на сегодня (Сдвиг)</button>
+    <!-- Переключатель вкладок -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('reading')">📖 ЧТЕНИЕ</button>
+        <button class="tab-btn" onclick="switchTab('listening')">🎧 СЛУШАНИЕ</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙️ НАСТРОЙКИ</button>
     </div>
 
-    <div class="card" style="padding: 10px;">
-        <h3 style="padding-left:15px; font-size:16px;">📅 График (Умный сдвиг)</h3>
-        <div class="scroll-container" id="scroll-box">
-            <table id="main-table">
-                <thead><tr><th>Дата</th><th>Н.</th><th>ЗП</th><th>Ближ.</th><th>Даль.</th><th>КА</th></tr></thead>
-                <tbody id="table-body"></tbody>
-            </table>
+    <!-- ВКЛАДКА: ЧТЕНИЕ (ТВОЙ СУЩЕСТВУЮЩИЙ HIFZ PRO) -->
+    <div id="tab-reading" class="tab-content">
+        <div class="card" id="today-card-reading">
+            <div class="today-header">
+                <h2 style="margin:0; font-size:16px;">Чтение на сегодня</h2>
+                <div id="date-now-reading" class="date-badge">--.--.--</div>
+            </div>
+            
+            <div id="tasks-container-reading">
+                <label class="task" id="task-n"><input type="checkbox" id="cb-n"> <b>Новая (20х):</b> <span id="n-page" class="val blue">--</span></label>
+                <label class="task" id="task-zp"><input type="checkbox" id="cb-zp"> <b>ЗП (5 стр):</b> <span id="zp-page" class="val orange">--</span></label>
+                <label class="task" id="task-na"><input type="checkbox" id="cb-na"> <b id="na-title">Ближний:</b> <span id="na-page" class="val blue">--</span></label>
+                <label class="task" id="task-fa"><input type="checkbox" id="cb-fa"> <b id="fa-title">Дальний:</b> <span id="fa-page" class="val orange">--</span></label>
+                <label class="task" id="task-ka"><input type="checkbox" id="cb-ka"> <b>КА 62-94 (3):</b> <span id="ka-page" class="val blue">--</span></label>
+            </div>
+
+            <textarea id="daily-notes" class="notes-area" rows="2" placeholder="✏️ Заметки (ошибки, слабые места...)"></textarea>
+            
+            <div id="tafsir-container-reading" class="tafsir-box" style="display: none;"></div>
+
+            <button id="pause-btn-reading" class="btn btn-pause" onclick="togglePauseReading()">⏸️ Взять паузу на сегодня (Сдвиг)</button>
+        </div>
+
+        <div class="card" style="padding: 10px;">
+            <h3 style="padding-left:15px; font-size:15px; margin-top:10px;">📅 График Чтения (Умный сдвиг)</h3>
+            <div class="scroll-container" id="scroll-box-reading">
+                <table id="main-table-reading">
+                    <thead><tr><th>Дата</th><th>Н.</th><th>ЗП</th><th>Ближ.</th><th>Даль.</th><th>КА</th></tr></thead>
+                    <tbody id="table-body-reading"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: СЛУШАНИЕ (НОВЫЙ АЛГОРИТМ НА 5 СТРАНИЦ) -->
+    <div id="tab-listening" class="tab-content" style="display: none;">
+        <!-- Окно настройки первого запуска -->
+        <div class="card" id="listening-setup-card" style="display: none;">
+            <div class="setup-container">
+                <h2 style="margin:0; font-size:18px; color: var(--primary);">🎧 Программа прослушивания</h2>
+                <p style="font-size: 13px; color: var(--text-light); margin-top: 10px;">
+                    Каждый день программа будет составлять план: 1 страница для внимательного погружения и 4 последующие — для фонового прослушивания.
+                </p>
+                <label style="font-weight: 600; font-size: 14px; display: block; margin-top: 15px;">С какой страницы вы хотите начать?</label>
+                <input type="number" id="listening-start-input" class="setup-input" min="1" max="604" value="1">
+                <div>
+                    <button class="btn-action" onclick="initListeningPlan()">Запустить программу</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент программы прослушивания -->
+        <div id="listening-main-content" style="display: none;">
+            <div class="card" id="today-card-listening">
+                <div class="today-header">
+                    <h2 style="margin:0; font-size:16px;">Слушание на сегодня</h2>
+                    <div id="date-now-listening" class="date-badge">--.--.--</div>
+                </div>
+                
+                <div id="tasks-container-listening">
+                    <label class="task" id="task-l-focus"><input type="checkbox" id="cb-l-focus"> <b>Внимательно прослушать (1 стр):</b> <span id="l-focus-page" class="val blue">--</span></label>
+                    <label class="task" id="task-l-bg"><input type="checkbox" id="cb-l-bg"> <b>Просто слушать фоном (4 стр):</b> <span id="l-bg-pages" class="val orange">--</span></label>
+                </div>
+
+                <textarea id="daily-notes-listening" class="notes-area" rows="2" placeholder="✏️ Заметки по прослушиванию..."></textarea>
+                
+                <div id="tafsir-container-listening" class="tafsir-box" style="display: none;"></div>
+
+                <button id="pause-btn-listening" class="btn btn-pause" onclick="togglePauseListening()">⏸️ Взять паузу на сегодня (Сдвиг)</button>
+            </div>
+
+            <div class="card" style="padding: 10px;">
+                <h3 style="padding-left:15px; font-size:15px; margin-top:10px;">📅 График Прослушивания (Умный сдвиг)</h3>
+                <div class="scroll-container" id="scroll-box-listening">
+                    <table id="main-table-listening">
+                        <thead><tr><th>Дата</th><th>Внимательно</th><th>Фоном (4 стр)</th></tr></thead>
+                        <tbody id="table-body-listening"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: НАСТРОЙКИ (СИНХРОНИЗАЦИЯ С GOOGLE ТАБЛИЦЕЙ) -->
+    <div id="tab-settings" class="tab-content" style="display: none;">
+        <div class="card">
+            <h2 style="margin:0 0 15px 0; font-size:16px; border-bottom:2px solid var(--border); padding-bottom:10px;">☁️ Настройка Облака (Google Таблицы)</h2>
+            
+            <div class="setting-section">
+                <label style="font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px;">URL-адрес веб-приложения Google Apps Script:</label>
+                <input type="text" id="google-script-url" class="input-text" placeholder="https://script.google.com/macros/s/.../exec">
+                <button class="btn-action" style="width: 100%; margin-top: 5px;" onclick="saveGoogleUrl()">Подключить и Сохранить</button>
+            </div>
+
+            <div class="setting-section">
+                <h3 style="margin: 0 0 10px 0; font-size: 14px;">🛠️ Действия</h3>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="btn" style="padding: 12px; font-weight: bold; background: rgba(39, 174, 96, 0.1); border-color: var(--primary);" onclick="triggerManualSync()">🔄 Принудительно синхронизировать сейчас</button>
+                    <button class="btn" style="padding: 12px; font-weight: bold; color: #e74c3c; background: rgba(231, 76, 60, 0.1); border-color: #e74c3c;" onclick="resetListeningStartPage()">🔄 Сбросить стартовую страницу прослушивания</button>
+                </div>
+            </div>
+
+            <div class="instruction-block">
+                <h3 style="margin: 0 0 10px 0; font-size: 13px; color: var(--primary); font-weight: bold;">📝 Инструкция по обновлению существующего скрипта:</h3>
+                <p style="margin: 0 0 10px 0; line-height: 1.5;">
+                    Если у тебя уже есть таблица и скрипт: тебе не нужно делать новую таблицу или ссылку! Просто вставь существующую ссылку сверху. <br>
+                    Но если ты хочешь, чтобы скрипт умел красиво группировать заметки из обеих вкладок в один лог таблицы, замени код в Apps Script на новый:
+                </p>
+                <textarea class="code-area" readonly id="apps-script-code">function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("SyncState");
+  var data = "";
+  if (sheet) {
+    data = sheet.getRange("A1").getValue();
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: "success", data: data }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("SyncState") || ss.insertSheet("SyncState");
+  
+  var postData = JSON.parse(e.postData.contents);
+  sheet.getRange("A1").setValue(JSON.stringify(postData));
+  
+  // Создаем лог активности для обеих программ
+  var logSheet = ss.getSheetByName("Общий Прогресс") || ss.insertSheet("Общий Прогресс");
+  logSheet.clear();
+  logSheet.appendRow(["Запись", "Информация"]);
+  logSheet.appendRow(["Синхронизировано", new Date().toLocaleString("ru-RU")]);
+  
+  for (var key in postData) {
+    if (key.indexOf("notes") > -1 && postData[key]) {
+      var noteLabel = key.indexOf("listening") > -1 ? "Заметка Слушания" : "Заметка Чтения";
+      var dateLabel = key.replace("hifz_listening_", "").replace("hifz_", "").replace("_notes", "");
+      logSheet.appendRow([noteLabel + " (" + dateLabel + ")", postData[key]]);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</textarea>
+                <button class="btn" style="width: 100%; margin-top: 10px; font-weight: bold;" onclick="copyScriptCode()">📋 Скопировать новый код скрипта</button>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 15px;">
+            <h2 style="margin:0 0 15px 0; font-size:16px; border-bottom:2px solid var(--border); padding-bottom:10px;">💾 Локальные бэкапы</h2>
+            <div class="backup-controls">
+                <button class="btn" onclick="exportBackup()">📥 Скачать файл прогресса (.json)</button>
+                <button class="btn" onclick="document.getElementById('import-file').click()">📤 Загрузить файл прогресса</button>
+                <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+            </div>
         </div>
     </div>
 
     <div class="quote-box" id="daily-quote">Загрузка мудрости...</div>
 
-    <div class="backup-controls" style="margin-bottom: 20px;">
-        <button class="btn" onclick="exportBackup()">📥 Скачать прогресс</button>
-        <button class="btn" onclick="document.getElementById('import-file').click()">📤 Загрузить</button>
-        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
-    </div>
+    <!-- Всплывающие уведомления (тосты) -->
+    <div id="toast-container"></div>
 
 <script>
-    // Получаем сегодняшнюю дату
+    // --- ПЕРЕМЕННЫЕ ВРЕМЕНИ ---
     const now = new Date();
     const nowDD = String(now.getDate()).padStart(2, '0');
     const nowMM = String(now.getMonth() + 1).padStart(2, '0');
     const nowYY = String(now.getFullYear()).slice(-2);
     const todayStr = `${nowDD}.${nowMM}.${nowYY}`;
 
-    // --- ДУХОВНАЯ ПОДЗАРЯДКА (1 ЦИТАТА В ДЕНЬ) ---
+    // --- КРАСИВЫЕ ТОСТЫ (ВМЕСТО ALERT) ---
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerText = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+    // --- ЦИТАТЫ ---
     const quotes = [
         "«Лучшими из вас являются те, кто изучает Коран и учит ему других» (Аль-Бухари)",
         "«Тот, кто читает Коран, зная его наизусть, будет с благородными посланцами» (Аль-Бухари)",
@@ -155,7 +335,7 @@
     }
     document.getElementById('daily-quote').innerHTML = `💡 ${savedQuoteText}`;
 
-    // --- БАЗА СЛОЖНЫХ СЛОВ (Маида / Анам) ---
+    // --- БАЗА ТАФСИРА И СЛОЖНЫХ СЛОВ (Маида / Анам) ---
     const quranVocab = {
         "116": "<b><span class='arabic-word'>مُهَيْمِنًا</span> (Мухайминан)</b> - Хранитель, свидетель над прежними Писаниями (аят 48).",
         "117": "<b><span class='arabic-word'>دَائِرَةٌ</span> (Да'иратун)</b> - Беда, превратности судьбы (аят 52). <br><b><span class='arabic-word'>يَرْتَدَّ</span> (Яртадда)</b> - Отступит от веры (аят 54).",
@@ -179,13 +359,40 @@
         "135": "<b><span class='arabic-word'>يَخُوضُونَ</span> (Яхудуна)</b> - Погружаются / болтают о знамениях (аят 68)."
     };
 
-    // --- ТЕМА ---
+    // --- НАВИГАЦИЯ И ТЕМЫ ---
     const themeToggle = document.getElementById('theme-toggle');
     if (localStorage.getItem('theme') === 'dark') { document.body.setAttribute('data-theme', 'dark'); themeToggle.innerText = '☀️'; }
     themeToggle.addEventListener('click', () => {
         if (document.body.getAttribute('data-theme') === 'dark') { document.body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); themeToggle.innerText = '🌙'; } 
         else { document.body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); themeToggle.innerText = '☀️'; }
     });
+
+    let currentTab = 'reading';
+
+    function switchTab(tabId) {
+        currentTab = tabId;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+        
+        const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+        if (activeBtn) activeBtn.classList.add('active');
+        document.getElementById(`tab-${tabId}`).style.display = 'block';
+
+        updateHeaderStats();
+
+        // Автоматический скролл к активному дню
+        setTimeout(() => {
+            if (tabId === 'reading') {
+                const tr = document.getElementById('today-reading');
+                const box = document.getElementById('scroll-box-reading');
+                if(tr && box) { box.scrollTop = tr.offsetTop - box.offsetTop - 50; }
+            } else if (tabId === 'listening') {
+                const tr = document.getElementById('today-listening');
+                const box = document.getElementById('scroll-box-listening');
+                if(tr && box) { box.scrollTop = tr.offsetTop - box.offsetTop - 50; }
+            }
+        }, 100);
+    }
 
     function formatRanges(arr) {
         if (!arr || arr.length === 0) return "—";
@@ -198,200 +405,636 @@
         return ranges.join(", ");
     }
 
-    // --- АЛГОРИТМ И ПАУЗЫ ---
-    const data = [];
-    let currentDate = new Date(2026, 2, 13);
-    let pauses = JSON.parse(localStorage.getItem('hifz_pauses') || '[]');
+    function getPageWrapped(p) {
+        let val = parseInt(p);
+        if (isNaN(val)) return 1;
+        while (val > 604) val -= 604;
+        while (val < 1) val += 604;
+        return val;
+    }
 
-    let naPointer = 95; let faPointer = 95; let kaPointer = 62; 
-    const TARGET_PAGE = 581;
-    let p = 116;
 
-    while (p <= TARGET_PAGE) {
-        let dd = String(currentDate.getDate()).padStart(2, '0');
-        let mm = String(currentDate.getMonth() + 1).padStart(2, '0');
-        let yy = String(currentDate.getFullYear()).slice(-2);
-        let dateStr = `${dd}.${mm}.${yy}`;
+    // --- 📖 ВКЛАДКА ЧТЕНИЯ (HIFZ PRO) ---
+    const readingData = [];
+    const READING_TARGET_PAGE = 581;
+    let readingStartNewPage = 116;
 
-        if (pauses.includes(dateStr)) {
-            data.push([dateStr, "Пауза ⏸️", "—", "—", "—", "—", p, 0, 0, true]);
+    function generateReadingSchedule() {
+        readingData.length = 0;
+        let currentDate = new Date(2026, 2, 13); // Стартовая дата графика чтения
+        let pauses = JSON.parse(localStorage.getItem('hifz_pauses') || '[]');
+
+        let naPointer = 95; let faPointer = 95; let kaPointer = 62; 
+        let p = readingStartNewPage;
+
+        while (p <= READING_TARGET_PAGE) {
+            let dd = String(currentDate.getDate()).padStart(2, '0');
+            let mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+            let yy = String(currentDate.getFullYear()).slice(-2);
+            let dateStr = `${dd}.${mm}.${yy}`;
+
+            if (pauses.includes(dateStr)) {
+                readingData.push([dateStr, "Пауза ⏸️", "—", "—", "—", "—", p, 0, 0, true]);
+            } else {
+                let newPage = p.toString();
+                let zpStr = `${p - 5}–${p - 1}`;
+
+                let kaPages = [];
+                for (let i = 0; i < 3; i++) { kaPages.push(kaPointer); kaPointer++; if (kaPointer > 94) kaPointer = 62; }
+                kaPages.sort((a,b) => a - b);
+
+                let naPoolStart = Math.max(95, p - 35); let naPoolEnd = p - 6;
+                let faPoolStart = 95; let faPoolEnd = p - 36;
+                let faPoolSize = faPoolEnd >= faPoolStart ? (faPoolEnd - faPoolStart + 1) : 0;
+                
+                let targetFaCount = 0;
+                if (faPoolSize > 0) targetFaCount = Math.min(5, Math.ceil(faPoolSize / 6)); 
+                let targetNaCount = 15 - targetFaCount;
+
+                let naPages = []; let faPages = [];
+
+                if (targetFaCount > 0) {
+                    if (faPointer < faPoolStart || faPointer > faPoolEnd) faPointer = faPoolStart;
+                    for (let i = 0; i < targetFaCount; i++) { faPages.push(faPointer); faPointer++; if (faPointer > faPoolEnd) faPointer = faPoolStart; }
+                }
+                if (targetNaCount > 0) {
+                    if (naPointer < naPoolStart || naPointer > naPoolEnd) naPointer = naPoolStart;
+                    for (let i = 0; i < targetNaCount; i++) { naPages.push(naPointer); naPointer++; if (naPointer > naPoolEnd) naPointer = naPoolStart; }
+                }
+
+                naPages.sort((a,b) => a - b); faPages.sort((a,b) => a - b);
+
+                readingData.push([ dateStr, newPage, zpStr, formatRanges(naPages), formatRanges(faPages), formatRanges(kaPages), p, targetNaCount, targetFaCount, false ]);
+                p++;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    }
+
+    function renderReadingTab() {
+        generateReadingSchedule();
+        let rowToday = readingData.find(r => r[0] === todayStr) || readingData[0]; 
+        let currentNewPage = rowToday[6];
+        let isPausedToday = rowToday[9];
+        
+        document.getElementById('date-now-reading').innerText = rowToday[0];
+
+        const pauseBtn = document.getElementById('pause-btn-reading');
+        if (isPausedToday) {
+            document.getElementById('tasks-container-reading').style.display = 'none';
+            document.getElementById('tafsir-container-reading').style.display = 'none';
+            pauseBtn.innerText = "▶️ Отменить паузу (Продолжить)";
+            pauseBtn.className = "btn btn-unpause";
         } else {
-            let newPage = p.toString();
-            let zpStr = `${p - 5}–${p - 1}`;
-
-            let kaPages = [];
-            for (let i = 0; i < 3; i++) { kaPages.push(kaPointer); kaPointer++; if (kaPointer > 94) kaPointer = 62; }
-            kaPages.sort((a,b) => a - b);
-
-            let naPoolStart = Math.max(95, p - 35); let naPoolEnd = p - 6;
-            let faPoolStart = 95; let faPoolEnd = p - 36;
-            let faPoolSize = faPoolEnd >= faPoolStart ? (faPoolEnd - faPoolStart + 1) : 0;
+            document.getElementById('tasks-container-reading').style.display = 'block';
+            document.getElementById('n-page').innerText = rowToday[1];
+            document.getElementById('zp-page').innerText = rowToday[2];
+            document.getElementById('na-page').innerText = rowToday[3];
+            document.getElementById('fa-page').innerText = rowToday[4];
+            document.getElementById('ka-page').innerText = rowToday[5]; 
+            document.getElementById('na-title').innerText = `Ближний (${rowToday[7]}):`;
+            document.getElementById('fa-title').innerText = `Дальний (${rowToday[8]}):`;
             
-            let targetFaCount = 0;
-            if (faPoolSize > 0) targetFaCount = Math.min(5, Math.ceil(faPoolSize / 6)); 
-            let targetNaCount = 15 - targetFaCount;
+            pauseBtn.innerText = "⏸️ Взять паузу на сегодня (Сдвиг)";
+            pauseBtn.className = "btn btn-pause";
 
-            let naPages = []; let faPages = [];
-
-            if (targetFaCount > 0) {
-                if (faPointer < faPoolStart || faPointer > faPoolEnd) faPointer = faPoolStart;
-                for (let i = 0; i < targetFaCount; i++) { faPages.push(faPointer); faPointer++; if (faPointer > faPoolEnd) faPointer = faPoolStart; }
+            // Тафсир (Сложные слова)
+            let tafsirHtml = "";
+            let hasVocab = false;
+            for (let vPage = currentNewPage - 5; vPage <= currentNewPage; vPage++) {
+                if (quranVocab[vPage]) {
+                    tafsirHtml += `<div class="tafsir-item"><span class="page-tag">Стр. ${vPage}</span><br>${quranVocab[vPage]}</div>`;
+                    hasVocab = true;
+                }
             }
-            if (targetNaCount > 0) {
-                if (naPointer < naPoolStart || naPointer > naPoolEnd) naPointer = naPoolStart;
-                for (let i = 0; i < targetNaCount; i++) { naPages.push(naPointer); naPointer++; if (naPointer > naPoolEnd) naPointer = naPoolStart; }
-            }
-
-            naPages.sort((a,b) => a - b); faPages.sort((a,b) => a - b);
-
-            data.push([ dateStr, newPage, zpStr, formatRanges(naPages), formatRanges(faPages), formatRanges(kaPages), p, targetNaCount, targetFaCount, false ]);
-            p++;
-        }
-        currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    // --- ОТОБРАЖЕНИЕ ---
-    let rowToday = data.find(r => r[0] === todayStr) || data[0]; 
-    let currentNewPage = rowToday[6];
-    let isPausedToday = rowToday[9];
-    
-    document.getElementById('date-now').innerText = rowToday[0];
-
-    const pauseBtn = document.getElementById('pause-btn');
-    if (isPausedToday) {
-        document.getElementById('tasks-container').style.display = 'none';
-        document.getElementById('tafsir-container').style.display = 'none';
-        pauseBtn.innerText = "▶️ Отменить паузу (Продолжить)";
-        pauseBtn.className = "btn btn-unpause";
-    } else {
-        document.getElementById('n-page').innerText = rowToday[1];
-        document.getElementById('zp-page').innerText = rowToday[2];
-        document.getElementById('na-page').innerText = rowToday[3];
-        document.getElementById('fa-page').innerText = rowToday[4];
-        document.getElementById('ka-page').innerText = rowToday[5]; 
-        document.getElementById('na-title').innerText = `Ближний (${rowToday[7]}):`;
-        document.getElementById('fa-title').innerText = `Дальний (${rowToday[8]}):`;
-        
-        // --- ЛОГИКА ТАФСИРА ДЛЯ НОВОЙ + ЗОЛОТОЙ 5-КИ ---
-        let tafsirHtml = "";
-        let hasVocab = false;
-        
-        // Перебираем 6 страниц: от начала Золотой Пятерки до Новой страницы
-        for (let vPage = currentNewPage - 5; vPage <= currentNewPage; vPage++) {
-            if (quranVocab[vPage]) {
-                tafsirHtml += `<div class="tafsir-item">
-                    <span class="page-tag">Стр. ${vPage}</span><br>
-                    ${quranVocab[vPage]}
-                </div>`;
-                hasVocab = true;
+            const tafsirBox = document.getElementById('tafsir-container-reading');
+            if (hasVocab) {
+                tafsirBox.style.display = 'block';
+                tafsirBox.innerHTML = `<h4>💡 Сложные слова (Новая + Повторение)</h4>${tafsirHtml}`;
+            } else {
+                tafsirBox.style.display = 'none';
             }
         }
 
-        if (hasVocab) {
-            const tafsirBox = document.getElementById('tafsir-container');
-            tafsirBox.style.display = 'block';
-            tafsirBox.innerHTML = `<h4>💡 Сложные слова (Новая + Повторение)</h4>${tafsirHtml}`;
+        // Заполняем таблицу чтения
+        let html = "";
+        readingData.forEach(r => {
+            let isToday = r[0] === todayStr ? 'class="today-row" id="today-reading"' : '';
+            if (r[9]) {
+                 html += `<tr ${isToday}><td>${r[0]}</td><td colspan="5" style="color:var(--accent)"><b>⏸️ ПАУЗА</b></td></tr>`;
+            } else {
+                 html += `<tr ${isToday}><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
+            }
+        });
+        document.getElementById('table-body-reading').innerHTML = html;
+
+        // Навешиваем события
+        if (!isPausedToday) {
+            const tasks = [
+                { cb: 'cb-n', container: 'task-n' }, { cb: 'cb-zp', container: 'task-zp' },
+                { cb: 'cb-na', container: 'task-na' }, { cb: 'cb-fa', container: 'task-fa' }, { cb: 'cb-ka', container: 'task-ka' }
+            ];
+
+            const notesArea = document.getElementById('daily-notes');
+            const notesKey = `hifz_${todayStr}_notes`;
+            notesArea.value = localStorage.getItem(notesKey) || '';
+            
+            notesArea.oninput = () => { 
+                localStorage.setItem(notesKey, notesArea.value);
+                triggerBackgroundCloudSync();
+            };
+
+            tasks.forEach(task => {
+                const checkbox = document.getElementById(task.cb);
+                const container = document.getElementById(task.container);
+                const storageKey = `hifz_${todayStr}_${task.cb}`;
+
+                if (localStorage.getItem(storageKey) === 'true') { 
+                    checkbox.checked = true; 
+                    container.classList.add('completed'); 
+                } else {
+                    checkbox.checked = false;
+                    container.classList.remove('completed');
+                }
+
+                checkbox.onclick = function() {
+                    localStorage.setItem(storageKey, this.checked);
+                    if (this.checked) container.classList.add('completed');
+                    else container.classList.remove('completed');
+                    updateHeaderStats();
+                    triggerBackgroundCloudSync();
+                };
+            });
         }
     }
-    
-    let pagesLeft = TARGET_PAGE - currentNewPage;
-    let percentDone = ((currentNewPage / TARGET_PAGE) * 100).toFixed(1);
-    document.getElementById('progress-text').innerText = `Осталось: ${pagesLeft} стр`;
-    document.getElementById('percent-text').innerText = `${percentDone}%`;
-    document.getElementById('progress-fill').style.width = `${percentDone}%`;
 
-    let currentJuz = Math.ceil((currentNewPage - 1) / 20);
-    if (currentJuz === 0) currentJuz = 1;
-    let endJuzPage = (currentJuz * 20) + 1;
-    let pagesToNextJuz = endJuzPage - currentNewPage;
-    
-    if (pagesToNextJuz === 0 || pagesToNextJuz < 0) {
-        document.getElementById('juz-timer-text').innerText = `🎉 Конец ${currentJuz}-го Джуза!`;
-    } else {
-        document.getElementById('juz-timer-text').innerText = `До конца ${currentJuz}-го Джуза: ${pagesToNextJuz} стр.`;
-    }
-
-    let html = "";
-    data.forEach(r => {
-        let isToday = r[0] === todayStr ? 'class="today-row" id="today"' : '';
-        if (r[9]) {
-             html += `<tr ${isToday}><td>${r[0]}</td><td colspan="5" style="color:var(--accent)"><b>⏸️ ПАУЗА</b></td></tr>`;
-        } else {
-             html += `<tr ${isToday}><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
-        }
-    });
-    document.getElementById('table-body').innerHTML = html;
-
-    // --- ПАУЗА ---
-    function togglePause() {
+    function togglePauseReading() {
         let pList = JSON.parse(localStorage.getItem('hifz_pauses') || '[]');
-        if (pList.includes(todayStr)) { pList = pList.filter(d => d !== todayStr); } 
-        else { pList.push(todayStr); }
+        if (pList.includes(todayStr)) { 
+            pList = pList.filter(d => d !== todayStr); 
+        } else { 
+            pList.push(todayStr); 
+        }
         localStorage.setItem('hifz_pauses', JSON.stringify(pList));
-        location.reload(); 
+        renderReadingTab();
+        updateHeaderStats();
+        triggerBackgroundCloudSync();
     }
 
-    // --- ЛОГИКА ГАЛОЧЕК ---
-    if (!isPausedToday) {
-        const tasks = [
-            { cb: 'cb-n', container: 'task-n' }, { cb: 'cb-zp', container: 'task-zp' },
-            { cb: 'cb-na', container: 'task-na' }, { cb: 'cb-fa', container: 'task-fa' }, { cb: 'cb-ka', container: 'task-ka' }
-        ];
 
-        const notesArea = document.getElementById('daily-notes');
-        const notesKey = `hifz_${todayStr}_notes`;
-        notesArea.value = localStorage.getItem(notesKey) || '';
-        notesArea.addEventListener('input', () => { localStorage.setItem(notesKey, notesArea.value); });
+    // --- 🎧 ВКЛАДКА СЛУШАНИЯ (АЛГОРИТМ НА 5 СТРАНИЦ) ---
+    const listeningData = [];
 
-        function updateStreak() {
+    function checkListeningSetup() {
+        const startPage = localStorage.getItem('hifz_listening_start_page');
+        if (!startPage) {
+            document.getElementById('listening-setup-card').style.display = 'block';
+            document.getElementById('listening-main-content').style.display = 'none';
+        } else {
+            document.getElementById('listening-setup-card').style.display = 'none';
+            document.getElementById('listening-main-content').style.display = 'block';
+            renderListeningTab();
+        }
+    }
+
+    function initListeningPlan() {
+        const inputVal = parseInt(document.getElementById('listening-start-input').value);
+        if (isNaN(inputVal) || inputVal < 1 || inputVal > 604) {
+            showToast("⚠️ Пожалуйста, введите корректную страницу от 1 до 604", "error");
+            return;
+        }
+        localStorage.setItem('hifz_listening_start_page', inputVal);
+        localStorage.setItem('hifz_listening_start_date', todayStr);
+        localStorage.setItem('hifz_listening_pauses', '[]');
+        
+        showToast("🎉 Программа прослушивания запущена!", "success");
+        checkListeningSetup();
+        updateHeaderStats();
+        triggerBackgroundCloudSync();
+    }
+
+    function resetListeningStartPage() {
+        // Кастомное подтверждение на основе UI
+        const confirmReset = confirm("Вы действительно хотите сбросить настройки прослушивания? Это обнулит текущий прогресс в этой вкладке.");
+        if (confirmReset) {
+            localStorage.removeItem('hifz_listening_start_page');
+            localStorage.removeItem('hifz_listening_start_date');
+            localStorage.removeItem('hifz_listening_pauses');
+            
+            // Удаляем старые выполненные дни
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.includes('_cb-l-')) {
+                    localStorage.removeItem(key);
+                }
+            }
+
+            showToast("🔄 Программа сброшена. Задайте стартовую страницу заново.", "info");
+            checkListeningSetup();
+            updateHeaderStats();
+            triggerBackgroundCloudSync();
+        }
+    }
+
+    function generateListeningSchedule() {
+        listeningData.length = 0;
+        const startPage = parseInt(localStorage.getItem('hifz_listening_start_page'));
+        const startDateStr = localStorage.getItem('hifz_listening_start_date') || todayStr;
+        const lPauses = JSON.parse(localStorage.getItem('hifz_listening_pauses') || '[]');
+
+        if (!startPage) return;
+
+        let [d, m, y] = startDateStr.split('.').map(Number);
+        let lDate = new Date(2000 + y, m - 1, d);
+        let lp = startPage;
+
+        // Генерируем расписание на 365 дней вперед
+        for (let i = 0; i < 365; i++) {
+            let dd = String(lDate.getDate()).padStart(2, '0');
+            let mm = String(lDate.getMonth() + 1).padStart(2, '0');
+            let yy = String(lDate.getFullYear()).slice(-2);
+            let dateStr = `${dd}.${mm}.${yy}`;
+
+            if (lPauses.includes(dateStr)) {
+                listeningData.push([dateStr, "Пауза ⏸️", "—", lp, true]);
+            } else {
+                let targetPage = lp;
+                let bgPages = [];
+                for (let b = 1; b <= 4; b++) {
+                    bgPages.push(getPageWrapped(lp + b));
+                }
+                let bgRange = formatRanges(bgPages);
+                
+                listeningData.push([dateStr, targetPage, bgRange, lp, false]);
+                lp = getPageWrapped(lp + 1); // Следующий день — следующая страница
+            }
+            lDate.setDate(lDate.getDate() + 1);
+        }
+    }
+
+    function renderListeningTab() {
+        generateListeningSchedule();
+        if (listeningData.length === 0) return;
+
+        let rowToday = listeningData.find(r => r[0] === todayStr) || listeningData[0];
+        let focusedPage = rowToday[3];
+        let isPausedToday = rowToday[4];
+
+        document.getElementById('date-now-listening').innerText = rowToday[0];
+        const pauseBtn = document.getElementById('pause-btn-listening');
+
+        if (isPausedToday) {
+            document.getElementById('tasks-container-listening').style.display = 'none';
+            document.getElementById('tafsir-container-listening').style.display = 'none';
+            pauseBtn.innerText = "▶️ Отменить паузу (Продолжить)";
+            pauseBtn.className = "btn btn-unpause";
+        } else {
+            document.getElementById('tasks-container-listening').style.display = 'block';
+            document.getElementById('l-focus-page').innerText = `Стр. ${rowToday[1]}`;
+            document.getElementById('l-bg-pages').innerText = `Стр. ${rowToday[2]}`;
+
+            pauseBtn.innerText = "⏸️ Взять паузу на сегодня (Сдвиг)";
+            pauseBtn.className = "btn btn-pause";
+
+            // Тафсир/Сложные слова для активной фокусной страницы прослушивания
+            const tafsirBox = document.getElementById('tafsir-container-listening');
+            if (quranVocab[focusedPage]) {
+                tafsirBox.style.display = 'block';
+                tafsirBox.innerHTML = `<h4>💡 Сложные слова активной страницы (Слушание)</h4><div class="tafsir-item"><span class="page-tag">Стр. ${focusedPage}</span><br>${quranVocab[focusedPage]}</div>`;
+            } else {
+                tafsirBox.style.display = 'none';
+            }
+        }
+
+        // Заполняем таблицу
+        let html = "";
+        listeningData.forEach(r => {
+            let isToday = r[0] === todayStr ? 'class="today-row" id="today-listening"' : '';
+            if (r[4]) {
+                html += `<tr ${isToday}><td>${r[0]}</td><td colspan="2" style="color:var(--accent)"><b>⏸️ ПАУЗА</b></td></tr>`;
+            } else {
+                html += `<tr ${isToday}><td>${r[0]}</td><td><b>Стр. ${r[1]}</b></td><td>Стр. ${r[2]}</td></tr>`;
+            }
+        });
+        document.getElementById('table-body-listening').innerHTML = html;
+
+        // Чекбоксы выполнения
+        if (!isPausedToday) {
+            const lTasks = [
+                { cb: 'cb-l-focus', container: 'task-l-focus' },
+                { cb: 'cb-l-bg', container: 'task-l-bg' }
+            ];
+
+            const notesArea = document.getElementById('daily-notes-listening');
+            const notesKey = `hifz_listening_${todayStr}_notes`;
+            notesArea.value = localStorage.getItem(notesKey) || '';
+
+            notesArea.oninput = () => {
+                localStorage.setItem(notesKey, notesArea.value);
+                triggerBackgroundCloudSync();
+            };
+
+            lTasks.forEach(task => {
+                const checkbox = document.getElementById(task.cb);
+                const container = document.getElementById(task.container);
+                const storageKey = `hifz_${todayStr}_${task.cb}`;
+
+                if (localStorage.getItem(storageKey) === 'true') {
+                    checkbox.checked = true;
+                    container.classList.add('completed');
+                } else {
+                    checkbox.checked = false;
+                    container.classList.remove('completed');
+                }
+
+                checkbox.onclick = function() {
+                    localStorage.setItem(storageKey, this.checked);
+                    if (this.checked) container.classList.add('completed');
+                    else container.classList.remove('completed');
+                    updateHeaderStats();
+                    triggerBackgroundCloudSync();
+                };
+            });
+        }
+    }
+
+    function togglePauseListening() {
+        let lPauses = JSON.parse(localStorage.getItem('hifz_listening_pauses') || '[]');
+        if (lPauses.includes(todayStr)) {
+            lPauses = lPauses.filter(d => d !== todayStr);
+        } else {
+            lPauses.push(todayStr);
+        }
+        localStorage.setItem('hifz_listening_pauses', JSON.stringify(lPauses));
+        renderListeningTab();
+        updateHeaderStats();
+        triggerBackgroundCloudSync();
+    }
+
+
+    // --- ДИНАМИЧЕСКИЕ СТАТИСТИКИ ШАПКИ ---
+    function updateHeaderStats() {
+        const syncInd = document.getElementById('sync-indicator');
+        if (syncInd) {
+            syncInd.className = `sync-indicator ${syncStatusClass}`;
+            syncInd.onclick = triggerManualSync;
+        }
+
+        if (currentTab === 'reading') {
+            document.getElementById('header-title').innerHTML = `📖 План Чтения <span id="sync-indicator" class="sync-indicator ${syncStatusClass}" title="Статус синхронизации">☁️</span>`;
+            
+            let rowToday = readingData.find(r => r[0] === todayStr) || readingData[0];
+            let currentNewPage = rowToday[6];
+            let pagesLeft = READING_TARGET_PAGE - currentNewPage;
+            let percentDone = ((currentNewPage / READING_TARGET_PAGE) * 100).toFixed(1);
+
+            document.getElementById('progress-text').innerText = `Осталось: ${pagesLeft} стр`;
+            document.getElementById('percent-text').innerText = `${percentDone}%`;
+            document.getElementById('progress-fill').style.width = `${percentDone}%`;
+
+            let currentJuz = Math.ceil((currentNewPage - 1) / 20);
+            if (currentJuz === 0) currentJuz = 1;
+            let endJuzPage = (currentJuz * 20) + 1;
+            let pagesToNextJuz = endJuzPage - currentNewPage;
+
+            if (pagesToNextJuz <= 0) {
+                document.getElementById('juz-timer-text').innerText = `🎉 Конец ${currentJuz}-го Джуза!`;
+            } else {
+                document.getElementById('juz-timer-text').innerText = `До конца ${currentJuz}-го Джуза: ${pagesToNextJuz} стр.`;
+            }
+
+            // Серия «В ударе» для Чтения
             let streak = 0;
-            let todayIndex = data.findIndex(r => r[0] === todayStr);
+            let todayIndex = readingData.findIndex(r => r[0] === todayStr);
             if (todayIndex === -1) todayIndex = 0;
 
+            const readingCheckboxes = ['cb-n', 'cb-zp', 'cb-na', 'cb-fa', 'cb-ka'];
+
             for (let i = todayIndex; i >= 0; i--) {
-                let dStr = data[i][0];
-                if (data[i][9]) continue; 
-                
+                let dStr = readingData[i][0];
+                if (readingData[i][9]) continue; 
+
                 let allChecked = true;
-                for(let t of tasks) {
-                    if (localStorage.getItem(`hifz_${dStr}_${t.cb}`) !== 'true') { allChecked = false; break; }
+                for (let cb of readingCheckboxes) {
+                    if (localStorage.getItem(`hifz_${dStr}_${cb}`) !== 'true') { allChecked = false; break; }
                 }
+
                 if (i === todayIndex && !allChecked) continue; 
                 if (allChecked) streak++;
-                else break; 
+                else break;
             }
             document.getElementById('streak-text').innerText = `🔥 В ударе: ${streak} дн.`;
+
+        } else if (currentTab === 'listening') {
+            document.getElementById('header-title').innerHTML = `🎧 План Слушания <span id="sync-indicator" class="sync-indicator ${syncStatusClass}" title="Статус синхронизации">☁️</span>`;
+            
+            if (listeningData.length === 0) {
+                document.getElementById('progress-text').innerText = `Осталось: -- стр`;
+                document.getElementById('percent-text').innerText = `0%`;
+                document.getElementById('progress-fill').style.width = `0%`;
+                document.getElementById('juz-timer-text').innerText = `Коран не запущен`;
+                return;
+            }
+
+            let rowToday = listeningData.find(r => r[0] === todayStr) || listeningData[0];
+            let activePage = rowToday[3];
+            let pagesLeft = 604 - activePage;
+            let percentDone = ((activePage / 604) * 100).toFixed(1);
+
+            document.getElementById('progress-text').innerText = `Слушаем: Стр. ${activePage}`;
+            document.getElementById('percent-text').innerText = `${percentDone}%`;
+            document.getElementById('progress-fill').style.width = `${percentDone}%`;
+
+            let currentJuz = Math.ceil((activePage - 1) / 20);
+            if (currentJuz === 0) currentJuz = 1;
+            let endJuzPage = (currentJuz * 20) + 1;
+            let pagesToNextJuz = endJuzPage - activePage;
+
+            if (pagesToNextJuz <= 0) {
+                document.getElementById('juz-timer-text').innerText = `🎉 Прослушан ${currentJuz}-й Джуз!`;
+            } else {
+                document.getElementById('juz-timer-text').innerText = `До конца ${currentJuz}-го Джуза: ${pagesToNextJuz} стр.`;
+            }
+
+            // Серия «В ударе» для Слушания
+            let streak = 0;
+            let todayIndex = listeningData.findIndex(r => r[0] === todayStr);
+            if (todayIndex === -1) todayIndex = 0;
+
+            const listeningCheckboxes = ['cb-l-focus', 'cb-l-bg'];
+
+            for (let i = todayIndex; i >= 0; i--) {
+                let dStr = listeningData[i][0];
+                if (listeningData[i][4]) continue; 
+
+                let allChecked = true;
+                for (let cb of listeningCheckboxes) {
+                    if (localStorage.getItem(`hifz_${dStr}_${cb}`) !== 'true') { allChecked = false; break; }
+                }
+
+                if (i === todayIndex && !allChecked) continue;
+                if (allChecked) streak++;
+                else break;
+            }
+            document.getElementById('streak-text').innerText = `🔥 В ударе: ${streak} дн.`;
+        } else {
+            document.getElementById('header-title').innerHTML = `⚙️ Настройки <span id="sync-indicator" class="sync-indicator ${syncStatusClass}" title="Статус синхронизации">☁️</span>`;
         }
-
-        tasks.forEach(task => {
-            const checkbox = document.getElementById(task.cb);
-            const container = document.getElementById(task.container);
-            const storageKey = `hifz_${todayStr}_${task.cb}`;
-
-            if (localStorage.getItem(storageKey) === 'true') { checkbox.checked = true; container.classList.add('completed'); }
-
-            checkbox.addEventListener('change', function() {
-                localStorage.setItem(storageKey, this.checked);
-                if (this.checked) container.classList.add('completed');
-                else container.classList.remove('completed');
-                updateStreak(); 
-            });
-        });
-
-        updateStreak();
     }
 
-    // --- РЕЗЕРВНОЕ КОПИРОВАНИЕ ---
+
+    // --- АВТОМАТИЧЕСКАЯ ОБЛАЧНАЯ СИНХРОНИЗАЦИЯ (GOOGLE SHEETS) ---
+    let syncStatusClass = 'offline'; 
+    let syncTimeout = null;
+
+    function saveGoogleUrl() {
+        const urlInput = document.getElementById('google-script-url').value.trim();
+        if (urlInput === "") {
+            localStorage.removeItem('hifz_google_script_url');
+            syncStatusClass = 'offline';
+            showToast("ℹ️ Ссылка удалена. Прогресс сохраняется только локально.", "info");
+        } else {
+            if (!urlInput.startsWith("https://script.google.com/")) {
+                showToast("⚠️ Ошибка: Ссылка должна начинаться с https://script.google.com/", "error");
+                return;
+            }
+            localStorage.setItem('hifz_google_script_url', urlInput);
+            showToast("✅ Ссылка сохранена! Синхронизируем облако...", "success");
+            uploadDataToCloud();
+        }
+        updateHeaderStats();
+    }
+
+    // Фоновый запуск сохранения с небольшой задержкой (чтобы не спамить сервер при частых кликах)
+    function triggerBackgroundCloudSync() {
+        const url = localStorage.getItem('hifz_google_script_url');
+        if (!url) return;
+
+        syncStatusClass = 'syncing';
+        updateHeaderStats();
+
+        if (syncTimeout) clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(() => {
+            uploadDataToCloud();
+        }, 1500); 
+    }
+
+    async function uploadDataToCloud() {
+        const url = localStorage.getItem('hifz_google_script_url');
+        if (!url) {
+            syncStatusClass = 'offline';
+            updateHeaderStats();
+            return;
+        }
+
+        syncStatusClass = 'syncing';
+        updateHeaderStats();
+
+        const payload = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('hifz_') || key === 'theme' || key.startsWith('listening_'))) {
+                payload[key] = localStorage.getItem(key);
+            }
+        }
+
+        try {
+            await fetch(url, {
+                method: 'POST',
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(payload)
+            });
+
+            syncStatusClass = 'synced';
+            updateHeaderStats();
+        } catch (err) {
+            console.error(err);
+            syncStatusClass = 'error';
+            updateHeaderStats();
+            showToast("🔴 Сетевая ошибка синхронизации.", "error");
+        }
+    }
+
+    async function downloadDataFromCloud() {
+        const url = localStorage.getItem('hifz_google_script_url');
+        if (!url) return;
+
+        syncStatusClass = 'syncing';
+        updateHeaderStats();
+
+        try {
+            const res = await fetch(url);
+            const resData = await res.json();
+            
+            if (resData && resData.status === 'success' && resData.data) {
+                const cloudPayload = JSON.parse(resData.data);
+                let loadedAny = false;
+
+                for (let key in cloudPayload) {
+                    localStorage.setItem(key, cloudPayload[key]);
+                    loadedAny = true;
+                }
+
+                if (loadedAny) {
+                    syncStatusClass = 'synced';
+                    showToast("☁️ Прогресс успешно загружен и синхронизирован с облаком!", "success");
+                    
+                    renderReadingTab();
+                    checkListeningSetup();
+                    updateHeaderStats();
+                }
+            } else {
+                uploadDataToCloud();
+            }
+        } catch (err) {
+            console.error(err);
+            syncStatusClass = 'error';
+            updateHeaderStats();
+        }
+    }
+
+    function triggerManualSync() {
+        const url = localStorage.getItem('hifz_google_script_url');
+        if (!url) {
+            showToast("⚠️ Ссылка на Google Скрипт не настроена!", "error");
+            return;
+        }
+        showToast("🔄 Синхронизация данных с облаком...", "info");
+        uploadDataToCloud().then(() => {
+            if (syncStatusClass === 'synced') {
+                showToast("✅ Данные выгружены в Google Таблицу!", "success");
+            }
+        });
+    }
+
+    function copyScriptCode() {
+        const codeText = document.getElementById('apps-script-code').value;
+        const el = document.createElement('textarea');
+        el.value = codeText;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+
+        showToast("📋 Код скрипта скопирован в буфер обмена!", "success");
+    }
+
+
+    // --- РЕЗЕРВНОЕ КОПИРОВАНИЕ ФАЙЛОМ ---
     function exportBackup() {
         let backupData = {};
         for (let i = 0; i < localStorage.length; i++) {
             let key = localStorage.key(i);
-            if (key.startsWith('hifz_') || key === 'theme') { backupData[key] = localStorage.getItem(key); }
+            if (key && (key.startsWith('hifz_') || key === 'theme' || key.startsWith('listening_'))) { 
+                backupData[key] = localStorage.getItem(key); 
+            }
         }
         let blob = new Blob([JSON.stringify(backupData)], { type: "application/json" });
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
-        a.href = url; a.download = `Hifz_Backup_${todayStr}.json`; a.click();
+        a.href = url; a.download = `Hifz_Pro_Legend_Backup_${todayStr}.json`; a.click();
+        showToast("📥 Бэкап сохранен в загрузки", "success");
     }
 
     function importBackup(event) {
@@ -402,16 +1045,34 @@
             try {
                 let importedData = JSON.parse(e.target.result);
                 for (let key in importedData) { localStorage.setItem(key, importedData[key]); }
-                alert("✅ Прогресс восстановлен!"); location.reload();
-            } catch(err) { alert("❌ Ошибка файла."); }
+                showToast("✅ Прогресс восстановлен из файла!", "success");
+                location.reload();
+            } catch(err) { 
+                showToast("❌ Ошибка при импорте.", "error"); 
+            }
         };
         reader.readAsText(file);
     }
 
-    window.onload = () => {
-        const tr = document.getElementById('today');
-        const box = document.getElementById('scroll-box');
-        if(tr && box) { box.scrollTop = tr.offsetTop - box.offsetTop - 50; }
+
+    // --- СТАРТ ПРИ ЗАПУСКЕ СТРАНИЦЫ ---
+    window.onload = async () => {
+        const savedUrl = localStorage.getItem('hifz_google_script_url');
+        if (savedUrl) {
+            document.getElementById('google-script-url').value = savedUrl;
+        }
+
+        renderReadingTab();
+        checkListeningSetup();
+        updateHeaderStats();
+
+        // Скроллим таблицу на сегодня в первой вкладке
+        switchTab('reading');
+
+        // Проверяем облако на наличие обновлений
+        if (savedUrl) {
+            await downloadDataFromCloud();
+        }
     };
 </script>
 </body>
