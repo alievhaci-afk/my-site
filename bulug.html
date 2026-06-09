@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер Повторения (Интервальный)</title>
+    <title>Тренажер Повторения (Книга и Хадисы)</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -148,59 +148,67 @@
 <body>
 
 <div class="container">
-    <h2>لوحة التحكم في التكرار</h2>
-    <div class="subtitle">Панель Чтения и Цикличного Повторения</div>
+    <h2>بلوغ المرام - لوحة التحكم</h2>
+    <div class="subtitle">Панель контроля страниц и хадисов</div>
     
     <div id="loading-overlay">Синхронизация с облаком Google...</div>
 
     <div class="status-box">
         <div class="status-item">
-            <span>الصفحة الأخيرة (Последняя страница):</span>
-            <span id="last-read-ui" class="highlight">0</span>
+            <span>التقدم الحالي (Текущий прогресс):</span>
+            <span class="highlight">стр. <span id="last-read-ui">0</span> | хадис <span id="last-hadith-ui">0</span></span>
         </div>
         
         <div class="status-item review-section">
-            <span>📌 التكرار القريب (Свежий материал):</span>
+            <span> Griffin 📌 التكرار القريب (Свежее):</span>
             <span id="fresh-review-ui" class="highlight" style="color: var(--review-fresh);">Загрузка...</span>
         </div>
 
         <div class="status-item" style="margin-top: 5px;">
-            <span>🔄 التكرار القديم (Старый по кругу):</span>
+            <span>🔄 التكرار القديم (Старое по кругу):</span>
             <span id="old-review-ui" class="highlight" style="color: var(--review-old);">Загрузка...</span>
         </div>
     </div>
 
-    <div class="inputs-row">
+    <div class="inputs-row" style="margin-bottom: 10px;">
         <div class="input-group" style="width: 50%;">
-            <label>Лимит свежего:</label>
+            <label>Лимит страниц:</label>
             <input type="number" id="fresh-limit" value="5" min="1" onchange="updateUI()">
         </div>
         <div class="input-group" style="width: 50%;">
-            <label>Размер шага старого:</label>
+            <label>Шаг хадисов по кругу:</label>
             <input type="number" id="old-limit" value="3" min="1" onchange="updateUI()">
         </div>
     </div>
 
     <div class="input-group">
-        <label>Внести новые прочитанные страницы за сегодня:</label>
+        <label>Добавить новые страницы за сегодня:</label>
         <div class="inputs-row">
-            <input type="number" id="page-start" placeholder="С какой">
-            <input type="number" id="page-end" placeholder="По какую">
+            <input type="number" id="page-start" placeholder="С какой стр.">
+            <input type="number" id="page-end" placeholder="По какую стр.">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Добавить номера пройденных хадисов:</label>
+        <div class="inputs-row">
+            <input type="number" id="hadith-start" placeholder="С какого хадиса">
+            <input type="number" id="hadith-end" placeholder="По какой хадис">
         </div>
     </div>
 
     <button id="submit-btn" onclick="saveProgress()">Отправить в Google Таблицу</button>
 
-    <div class="history-title">История уроков из Google Таблицы:</div>
+    <div class="history-title">История уроков:</div>
     <ul id="history-ui" class="history-list"></ul>
 </div>
 
 <script>
-    // ОБЯЗАТЕЛЬНО УКАЖИТЕ ЗДЕСЬ ВАШ URL ИЗ GOOGLE APPS SCRIPT
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLbF47y73gY6E2iwbIe370VgsRsvhrLjr6Ow-NeDDKQNOppCjPqGxbETrg445PHIEk/exec";
 
     let readingData = {
         lastPage: 0,
+        lastHadith: 0,
         history: []
     };
 
@@ -212,7 +220,26 @@
                 mode: 'cors',
                 body: JSON.stringify({ action: 'read' })
             });
-            readingData = await response.json();
+            const rawData = await response.json();
+            
+            // Обработка данных из таблицы с учетом новых колонок хадисов
+            readingData.history = rawData.history.map(item => ({
+                start: item.start,
+                end: item.end,
+                date: item.date,
+                hStart: item.hStart || 0,
+                hEnd: item.hEnd || 0
+            }));
+            
+            // Находим максимумы
+            readingData.lastPage = rawData.lastPage || 0;
+            readingData.lastHadith = 0;
+            readingData.history.forEach(h => {
+                if (parseInt(h.hEnd) > readingData.lastHadith) {
+                    readingData.lastHadith = parseInt(h.hEnd);
+                }
+            });
+
             updateUI();
         } catch (error) {
             console.error("Ошибка синхронизации:", error);
@@ -227,6 +254,7 @@
         const oldLimit = parseInt(document.getElementById('old-limit').value) || 3;
         
         document.getElementById('last-read-ui').innerText = readingData.lastPage;
+        document.getElementById('last-hadith-ui').innerText = readingData.lastHadith;
 
         if (readingData.lastPage === 0) {
             document.getElementById('fresh-review-ui').innerText = "Начните чтение";
@@ -234,50 +262,45 @@
             return;
         }
 
-        // 1. РАСЧЕТ БЛИЖНЕГО ПОВТОРЕНИЯ (Скользящее окно назад от максимума)
+        // 1. РАСЧЕТ БЛИЖНЕГО ПОВТОРЕНИЯ СВЕЖЕГО (По страницам)
         let startFresh = readingData.lastPage - freshLimit + 1;
         if (startFresh < 1) startFresh = 1;
-        
-        if (startFresh === readingData.lastPage) {
-            document.getElementById('fresh-review-ui').innerText = `الصفحة ${readingData.lastPage}`;
+        document.getElementById('fresh-review-ui').innerText = `الصحائف من ${startFresh} إلى ${readingData.lastPage}`;
+
+        // 2. РАСЧЕТ ДАЛЬНЕГО ПОВТОРЕНИЯ СТАРЫХ ХАДИСОВ (По кругу)
+        if (readingData.lastHadith === 0) {
+            document.getElementById('old-review-ui').innerText = "Хадисы не введены";
         } else {
-            document.getElementById('fresh-review-ui').innerText = `من ${startFresh} إلى ${readingData.lastPage}`;
+            const totalLessons = readingData.history.length;
+            let startOldH = ((totalLessons - 1) * oldLimit) % readingData.lastHadith + 1;
+            let endOldH = startOldH + oldLimit - 1;
+            if (endOldH > readingData.lastHadith) endOldH = readingData.lastHadith;
+
+            document.getElementById('old-review-ui').innerText = `الأحاديث من ${startOldH} إلى ${endOldH}`;
         }
 
-        // 2. РАСЧЕТ ЦИКЛИЧНОГО ПОВТОРЕНИЯ СТАРЫХ СТРАНИЦ
-        // Вычисляем текущий шаг по числу проведенных уроков (записей в истории)
-        const totalLessons = readingData.history.length;
-        
-        // Математический алгоритм кругового сдвига
-        let startOld = ((totalLessons - 1) * oldLimit) % readingData.lastPage + 1;
-        let endOld = startOld + oldLimit - 1;
-        
-        if (endOld > readingData.lastPage) {
-            endOld = readingData.lastPage;
-        }
-
-        if (startOld === endOld) {
-            document.getElementById('old-review-ui').innerText = `الصفحة ${startOld}`;
-        } else {
-            document.getElementById('old-review-ui').innerText = `من ${startOld} إلى ${endOld}`;
-        }
-
-        // 3. ОБНОВЛЕНИЕ ТАБЛИЦЫ ИСТОРИИ НА ЭКРАНЕ
+        // 3. ОБНОВЛЕНИЕ ЖУРНАЛА ИСТОРИИ
         const historyUi = document.getElementById('history-ui');
         historyUi.innerHTML = '';
         readingData.history.slice().reverse().forEach(item => {
             const li = document.createElement('li');
-            li.innerText = `Страницы: ${item.start} — ${item.end} (${item.date})`;
+            let hadithText = item.hEnd > 0 ? ` | хадисы: ${item.hStart}-${item.hEnd}` : '';
+            li.innerText = `Стр: ${item.start}-${item.end}${hadithText} (${item.date})`;
             historyUi.appendChild(li);
         });
 
+        // Автоподстановка для удобства ввода
         document.getElementById('page-start').value = readingData.lastPage + 1;
         document.getElementById('page-end').value = '';
+        document.getElementById('hadith-start').value = readingData.lastHadith + 1;
+        document.getElementById('hadith-end').value = '';
     }
 
     async function saveProgress() {
         const start = parseInt(document.getElementById('page-start').value);
         const end = parseInt(document.getElementById('page-end').value);
+        const hStart = parseInt(document.getElementById('hadith-start').value) || 0;
+        const hEnd = parseInt(document.getElementById('hadith-end').value) || 0;
 
         if (isNaN(start) || isNaN(end) || start > end) {
             alert("Пожалуйста, введите корректный диапазон страниц.");
@@ -288,11 +311,16 @@
         document.getElementById('submit-btn').disabled = true;
 
         const today = new Date().toLocaleDateString();
+        
+        // ВАЖНО: Скрипт Apps Script автоматически принимает дополнительные параметры, 
+        // так как они передаются внутри JSON объекта
         const payload = {
             action: 'write',
             start: start,
             end: end,
-            date: today
+            date: today,
+            hStart: hStart,
+            hEnd: hEnd
         };
 
         try {
