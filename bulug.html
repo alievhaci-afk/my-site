@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер Повторения</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #81a1c1;
+            --text-color: #eceff4;
+            --text-muted: #d8dee9;
+            --border-color: #4c566a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .status-box {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .inputs-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 16px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            color: var(--bg-color);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #a3be8c;
+        }
+
+        .history-title {
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: var(--text-muted);
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #bf616a;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Панель Чтения и Повторения</h2>
+    
+    <div class="status-box">
+        <div class="status-item">
+            <span>Последняя прочитанная страница:</span>
+            <span id="last-read-ui" class="highlight">0</span>
+        </div>
+        <div class="status-item" style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 10px;">
+            <span>📋 Задание на повторение сегодня:</span>
+            <span id="review-plan-ui" class="highlight" style="color: #a3be8c;">Нет данных</span>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Лимит страниц для повтора (чтобы не было тяжело):</label>
+        <input type="number" id="review-limit" value="5" min="1" onchange="updateUI()">
+    </div>
+
+    <div class="input-group">
+        <label>Внести новые прочитанные страницы за сегодня:</label>
+        <div class="inputs-row">
+            <input type="number" id="page-start" placeholder="С какой">
+            <input type="number" id="page-end" placeholder="По какую">
+        </div>
+    </div>
+
+    <button onclick="saveProgress()">Добавить в базу</button>
+
+    <div class="history-title">История прочитанных диапазонов:</div>
+    <ul id="history-ui" class="history-list"></ul>
+    
+    <button class="clear-btn" onclick="resetStorage()">Сбросить всю историю данных</button>
+</div>
+
+<script>
+    // Загрузка данных или инициализация пустой базы
+    let readingData = JSON.parse(localStorage.getItem('open_book_tracker')) || {
+        lastPage: 0,
+        history: []
+    };
+
+    function updateUI() {
+        const limit = parseInt(document.getElementById('review-limit').value) || 5;
+        
+        // Обновляем показатель последней страницы
+        document.getElementById('last-read-ui').innerText = readingData.lastPage;
+
+        // Расчет плана повторения на основе лимита
+        if (readingData.lastPage === 0) {
+            document.getElementById('review-plan-ui').innerText = "Начните чтение";
+        } else {
+            let startReview = readingData.lastPage - limit + 1;
+            if (startReview < 1) startReview = 1;
+            
+            if (startReview === readingData.lastPage) {
+                document.getElementById('review-plan-ui').innerText = `Страница ${readingData.lastPage}`;
+            } else {
+                document.getElementById('review-plan-ui').innerText = `С ${startReview} по ${readingData.lastPage}`;
+            }
+        }
+
+        // Обновление списка истории на экране
+        const historyUi = document.getElementById('history-ui');
+        historyUi.innerHTML = '';
+        readingData.history.slice().reverse().forEach(item => {
+            const li = document.createElement('li');
+            li.innerText = `Страницы: ${item.start} — ${item.end} (Добавлено: ${item.date})`;
+            historyUi.appendChild(li);
+        });
+
+        // Подсказка автозаполнения для удобства
+        document.getElementById('page-start').value = readingData.lastPage + 1;
+        document.getElementById('page-end').value = '';
+    }
+
+    function saveProgress() {
+        const start = parseInt(document.getElementById('page-start').value);
+        const end = parseInt(document.getElementById('page-end').value);
+
+        if (isNaN(start) || isNaN(end) || start > end) {
+            alert("Пожалуйста, введите корректный диапазон страниц.");
+            return;
+        }
+
+        // Формируем дату добавления
+        const today = new Date().toLocaleDateString();
+
+        // Запись в структуру данных
+        readingData.history.push({ start: start, end: end, date: today });
+        readingData.lastPage = end;
+
+        // Сохранение в память браузера планшета
+        localStorage.setItem('open_book_tracker', JSON.stringify(readingData));
+
+        // Обновление интерфейса
+        updateUI();
+    }
+
+    function resetStorage() {
+        if (confirm("Вы уверены, что хотите полностью очистить базу данных этой книги?")) {
+            localStorage.removeItem('open_book_tracker');
+            readingData = { lastPage: 0, history: [] };
+            updateUI();
+        }
+    }
+
+    // Первичный запуск экрана
+    updateUI();
+</script>
+
+</body>
+</html>
