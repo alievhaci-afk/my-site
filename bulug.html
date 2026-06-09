@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тренажер Повторения</title>
+    <title>Тренажер Повторения (Google Sheets)</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -45,6 +45,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
             background-color: rgba(255,255,255,0.02);
+            position: relative;
         }
 
         .status-item {
@@ -124,69 +125,83 @@
             margin-top: 10px;
         }
 
-        .clear-btn {
-            background: none;
-            border: none;
-            color: #bf616a;
-            font-size: 12px;
-            cursor: pointer;
-            padding: 0;
-            margin-top: 10px;
-            text-decoration: underline;
+        #loading-overlay {
+            display: none;
+            text-align: center;
+            color: #ebcb8b;
+            font-size: 14px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Панель Чтения и Повторения</h2>
+    <h2>Панель Чтения (Google Таблицы)</h2>
     
+    <div id="loading-overlay">Синхронизация с облаком Google...</div>
+
     <div class="status-box">
         <div class="status-item">
             <span>Последняя прочитанная страница:</span>
             <span id="last-read-ui" class="highlight">0</span>
         </div>
         <div class="status-item" style="border-top: 1px solid var(--border-color); margin-top: 10px; padding-top: 10px;">
-            <span>📋 Задание на повторение сегодня:</span>
-            <span id="review-plan-ui" class="highlight" style="color: #a3be8c;">Нет данных</span>
+            <span>📋 План повторения на сегодня:</span>
+            <span id="review-plan-ui" class="highlight" style="color: #a3be8c;">Загрузка...</span>
         </div>
     </div>
 
     <div class="input-group">
-        <label>Лимит страниц для повтора (чтобы не было тяжело):</label>
+        <label>Лимит страниц для повтора:</label>
         <input type="number" id="review-limit" value="5" min="1" onchange="updateUI()">
     </div>
 
     <div class="input-group">
-        <label>Внести новые прочитанные страницы за сегодня:</label>
+        <label>Внести новые прочитанные страницы:</label>
         <div class="inputs-row">
             <input type="number" id="page-start" placeholder="С какой">
             <input type="number" id="page-end" placeholder="По какую">
         </div>
     </div>
 
-    <button onclick="saveProgress()">Добавить в базу</button>
+    <button id="submit-btn" onclick="saveProgress()">Отправить в Google Таблицу</button>
 
-    <div class="history-title">История прочитанных диапазонов:</div>
+    <div class="history-title">История из Google Таблицы:</div>
     <ul id="history-ui" class="history-list"></ul>
-    
-    <button class="clear-btn" onclick="resetStorage()">Сбросить всю историю данных</button>
 </div>
 
 <script>
-    // Загрузка данных или инициализация пустой базы
-    let readingData = JSON.parse(localStorage.getItem('open_book_tracker')) || {
+    // СЮДА СКОПИРУЙТЕ ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ ИЗ ШАГА 2
+    const SCRIPT_URL = "ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ_ИЗ_ШАГА_2";
+
+    let readingData = {
         lastPage: 0,
         history: []
     };
 
+    async function loadDataFromSheets() {
+        document.getElementById('loading-overlay').style.display = 'block';
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                body: JSON.stringify({ action: 'read' })
+            });
+            readingData = await response.getJson ? await response.json() : JSON.parse(await response.text());
+            updateUI();
+        } catch (error) {
+            console.error("Ошибка загрузки данных:", error);
+            alert("Не удалось связаться с Google Таблицей.");
+        } finally {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+    }
+
     function updateUI() {
         const limit = parseInt(document.getElementById('review-limit').value) || 5;
-        
-        // Обновляем показатель последней страницы
         document.getElementById('last-read-ui').innerText = readingData.lastPage;
 
-        // Расчет плана повторения на основе лимита
         if (readingData.lastPage === 0) {
             document.getElementById('review-plan-ui').innerText = "Начните чтение";
         } else {
@@ -200,21 +215,19 @@
             }
         }
 
-        // Обновление списка истории на экране
         const historyUi = document.getElementById('history-ui');
         historyUi.innerHTML = '';
         readingData.history.slice().reverse().forEach(item => {
             const li = document.createElement('li');
-            li.innerText = `Страницы: ${item.start} — ${item.end} (Добавлено: ${item.date})`;
+            li.innerText = `Страницы: ${item.start} — ${item.end} (${item.date})`;
             historyUi.appendChild(li);
         });
 
-        // Подсказка автозаполнения для удобства
         document.getElementById('page-start').value = readingData.lastPage + 1;
         document.getElementById('page-end').value = '';
     }
 
-    function saveProgress() {
+    async function saveProgress() {
         const start = parseInt(document.getElementById('page-start').value);
         const end = parseInt(document.getElementById('page-end').value);
 
@@ -223,30 +236,36 @@
             return;
         }
 
-        // Формируем дату добавления
+        document.getElementById('loading-overlay').style.display = 'block';
+        document.getElementById('submit-btn').disabled = true;
+
         const today = new Date().toLocaleDateString();
+        const payload = {
+            action: 'write',
+            start: start,
+            end: end,
+            date: today
+        };
 
-        // Запись в структуру данных
-        readingData.history.push({ start: start, end: end, date: today });
-        readingData.lastPage = end;
-
-        // Сохранение в память браузера планшета
-        localStorage.setItem('open_book_tracker', JSON.stringify(readingData));
-
-        // Обновление интерфейса
-        updateUI();
-    }
-
-    function resetStorage() {
-        if (confirm("Вы уверены, что хотите полностью очистить базу данных этой книги?")) {
-            localStorage.removeItem('open_book_tracker');
-            readingData = { lastPage: 0, history: [] };
-            updateUI();
+        try {
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                body: JSON.stringify(payload)
+            });
+            // После успешной записи перечитываем таблицу заново
+            await loadDataFromSheets();
+        } catch (error) {
+            console.error("Ошибка сохранения данных:", error);
+            alert("Не удалось сохранить данные в таблицу.");
+        } finally {
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
         }
     }
 
-    // Первичный запуск экрана
-    updateUI();
+    // Запуск синхронизации при открытии вкладки
+    loadDataFromSheets();
 </script>
 
 </body>
